@@ -1,71 +1,22 @@
 #[cfg(test)]
 mod tests {
-    use smol::{Task, Timer};
-    use std::time::Duration;
-    use std::time::SystemTime;
+    use std::time::{Duration, Instant};
 
-    use util::{multi_thread, timeout};
+    use anyhow::Result;
+    use util::Timeout;
+
+    async fn run(a: u64, b: u64) -> Result<Instant> {
+        async_io::Timer::after(Duration::from_secs(a))
+            .timeout(Duration::from_secs(b))
+            .await
+    }
 
     #[test]
     fn it_works() {
-        multi_thread();
-
-        let begin = SystemTime::now();
-        let a = Task::spawn(async {
-            timeout(Duration::from_secs(5), Timer::after(Duration::from_secs(1))).await
-        });
-
-        let b = Task::spawn(async {
-            timeout(Duration::from_secs(5), Timer::after(Duration::from_secs(2))).await
-        });
-
-        let c = Task::spawn(async {
-            timeout(Duration::from_secs(5), Timer::after(Duration::from_secs(3))).await
-        });
-
-        let d = Task::spawn(async {
-            timeout(Duration::from_secs(5), Timer::after(Duration::from_secs(4))).await
-        });
-
-        let e = Task::spawn(async {
-            timeout(Duration::from_secs(5), Timer::after(Duration::from_secs(5))).await
-        });
-
-        let f = Task::spawn(async {
-            timeout(Duration::from_secs(5), Timer::after(Duration::from_secs(6))).await
-        });
-
-        let g = Task::spawn(async {
-            timeout(Duration::from_secs(5), Timer::after(Duration::from_secs(7))).await
-        });
-
-        let h = Task::spawn(async {
-            timeout(Duration::from_secs(5), Timer::after(Duration::from_secs(8))).await
-        });
-
-        let i = Task::spawn(async {
-            timeout(Duration::from_secs(5), Timer::after(Duration::from_secs(9))).await
-        });
-
-        smol::block_on(async {
-            assert_eq!(a.await.is_ok(), true);
-            println!("Time elapsed {}ms", begin.elapsed().unwrap().as_millis());
-            assert_eq!(b.await.is_ok(), true);
-            println!("Time elapsed {}ms", begin.elapsed().unwrap().as_millis());
-            assert_eq!(c.await.is_ok(), true);
-            println!("Time elapsed {}ms", begin.elapsed().unwrap().as_millis());
-            assert_eq!(d.await.is_ok(), true);
-            println!("Time elapsed {}ms", begin.elapsed().unwrap().as_millis());
-            assert_eq!(e.await.is_ok(), true);
-            println!("Time elapsed {}ms", begin.elapsed().unwrap().as_millis());
-            assert_eq!(f.await.err().unwrap().to_string(), "Timeout!!!".to_string());
-            println!("Time elapsed {}ms", begin.elapsed().unwrap().as_millis());
-            assert_eq!(g.await.err().unwrap().to_string(), "Timeout!!!".to_string());
-            println!("Time elapsed {}ms", begin.elapsed().unwrap().as_millis());
-            assert_eq!(h.await.err().unwrap().to_string(), "Timeout!!!".to_string());
-            println!("Time elapsed {}ms", begin.elapsed().unwrap().as_millis());
-            assert_eq!(i.await.err().unwrap().to_string(), "Timeout!!!".to_string());
-            println!("Time elapsed {}ms", begin.elapsed().unwrap().as_millis());
+        futures_lite::future::block_on(async {
+            assert!(run(1, 2).await.is_ok());
+            assert!(run(2, 2).await.is_ok());
+            assert_eq!(run(3, 2).await.err().unwrap().to_string(), "Timeout!");
         });
     }
 }
