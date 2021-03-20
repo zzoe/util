@@ -9,3 +9,10 @@ mod timeout;
 
 #[cfg(feature = "timeout")]
 pub use timeout::Timeout;
+
+#[cfg(feature = "esb")]
+mod esb;
+
+#[cfg(feature = "esb")]
+pub use esb::esb_json_to_xml;
+pub use esb::esb_xml_to_json;

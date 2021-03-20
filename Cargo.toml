@@ -11,13 +11,17 @@ futures-lite = { version = "1" }
 async-io = { version = "1", optional = true }
 anyhow = { version = "1", optional = true }
 pin-project-lite = { version = "0", optional = true }
+quick-xml = { version = "0", optional = true }
+bytes = { version = "1", optional = true }
+serde_json = { version = "1", optional = true }
 
 [features]
 default = []
-all = ["select", "timeout"]
+all = ["select", "timeout", "esb"]
 
 select = []
 timeout = ["async-io", "anyhow", "pin-project-lite"]
+esb = ["quick-xml", "bytes", "serde_json"]
 
 [dev-dependencies]
 futures-lite = { version = "1" }
