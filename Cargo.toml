@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-futures-lite = { version = "1" }
+futures-lite = { version = "1", optional = true }
 async-io = { version = "1", optional = true }
 anyhow = { version = "1", optional = true }
 pin-project-lite = { version = "0", optional = true }
@@ -19,13 +19,13 @@ serde_json = { version = "1", optional = true }
 default = []
 all = ["select", "timeout", "esb"]
 
-select = []
-timeout = ["async-io", "anyhow", "pin-project-lite"]
+select = ["futures-lite"]
+timeout = ["async-io", "anyhow", "futures-lite", "pin-project-lite"]
 esb = ["quick-xml", "bytes", "serde_json"]
 
 [dev-dependencies]
 futures-lite = { version = "1" }
-async-io = { version = "1"}
-anyhow = { version = "1"}
-pin-project-lite = { version = "0"}
-util = {path=".", features=["all"]}
+async-io = { version = "1" }
+anyhow = { version = "1" }
+pin-project-lite = { version = "0" }
+util = { path = ".", features = ["all"] }

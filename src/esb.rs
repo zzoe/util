@@ -18,6 +18,7 @@ pub fn esb_xml_to_json(b: Bytes) -> Result<Bytes> {
     let mut msg = BytesMut::new();
     let mut buf = Vec::new();
     let mut is_field = false;
+    let mut field_need_quote = false;
 
     loop {
         match reader.read_event(&mut buf)? {
@@ -28,7 +29,7 @@ pub fn esb_xml_to_json(b: Bytes) -> Result<Bytes> {
                 b"data" => {
                     let mut attrs = s.attributes();
                     while let Some(Ok(a)) = attrs.next() {
-                        if b"name".eq(&*a.key.to_ascii_lowercase()) {
+                        if a.key.to_ascii_lowercase().eq(b"name") {
                             msg.put_u8(b'"');
                             msg.put_slice(&*a.value);
                             msg.put_slice(br#"":"#);
@@ -36,7 +37,19 @@ pub fn esb_xml_to_json(b: Bytes) -> Result<Bytes> {
                         }
                     }
                 }
-                b"field" => is_field = true,
+                b"field" => {
+                    is_field = true;
+                    let mut attrs = s.attributes();
+                    while let Some(Ok(a)) = attrs.next() {
+                        if a.key.to_ascii_lowercase().eq(b"type")
+                            && (a.value.to_ascii_lowercase().eq(b"byte")
+                                || a.value.to_ascii_lowercase().eq(b"string"))
+                        {
+                            field_need_quote = true;
+                            break;
+                        }
+                    }
+                }
                 _ => {}
             },
             Event::End(e) => match &*e.name().to_ascii_lowercase() {
@@ -61,10 +74,20 @@ pub fn esb_xml_to_json(b: Bytes) -> Result<Bytes> {
             },
             Event::Text(t) => {
                 if is_field {
-                    msg.put_u8(b'"');
+                    if field_need_quote {
+                        msg.put_u8(b'"');
+                    }
+
                     msg.put_slice(&*t);
-                    msg.put_slice(br#"","#);
+
+                    if field_need_quote {
+                        msg.put_u8(b'"');
+                    }
+
+                    msg.put_u8(b',');
+
                     is_field = false;
+                    field_need_quote = false;
                 }
             }
             Event::Eof => break,
@@ -115,8 +138,10 @@ fn write_value(
             elem.push_attribute(("scale", fields[2]));
             writer.write_event(Event::Start(elem.clone()))?;
 
-            if let Some(field) = fields.get(3) {
-                let text = BytesText::from_plain_str(field);
+            if fields.len() > 3 {
+                //当值里面包含","时会被分隔，这里重新合并。
+                let field: String = fields[3..].join(",");
+                let text = BytesText::from_plain_str(&*field);
                 writer.write_event(Event::Text(text))?;
             }
 
@@ -206,6 +231,9 @@ fn match_head(data_name: &str) -> &str {
 fn match_field(field_type: &str) -> &str {
     match &*field_type.to_ascii_lowercase() {
         "s" => "string",
-        _ => "",
+        "d" => "double",
+        "f" => "float",
+        "i" => "int",
+        o => panic!("Unsupported yet: {}", o),
     }
 }
