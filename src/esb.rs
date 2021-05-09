@@ -70,20 +70,18 @@ pub fn esb_xml_to_json(b: Bytes) -> Result<Bytes> {
             Event::Empty(s) => match &*s.name().to_ascii_lowercase() {
                 b"struct" => msg.put_slice(b"{}"),
                 b"array" => msg.put_slice(b"[]"),
+                b"field" => msg.put_slice(b"null,"),
                 _ => {}
             },
             Event::Text(t) => {
                 if is_field {
                     if field_need_quote {
                         msg.put_u8(b'"');
-                    }
-
-                    msg.put_slice(&*t);
-
-                    if field_need_quote {
+                        msg.put_slice(&*t);
                         msg.put_u8(b'"');
+                    } else {
+                        msg.put_slice(&*t);
                     }
-
                     msg.put_u8(b',');
 
                     is_field = false;
