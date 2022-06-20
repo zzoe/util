@@ -104,7 +104,7 @@ fn truncate(msg: &mut BytesMut, needle: &[u8]) {
 
 pub fn esb_json_to_xml(b: Bytes) -> Result<Bytes> {
     let mut res = Vec::new().writer();
-    res.write(&br#"<?xml version="1.0" encoding="UTF-8"?><service>"#[..])
+    res.write_all(&br#"<?xml version="1.0" encoding="UTF-8"?><service>"#[..])
         .unwrap();
     let mut writer = Writer::new(res);
 

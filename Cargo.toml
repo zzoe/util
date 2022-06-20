@@ -3,12 +3,6 @@ name = "util"
 version = "0.1.0"
 authors = ["zoe <zoe211@163.com>"]
 edition = "2021"
-lisence = "Apache-2.0"
-description = "个人开发小工具"
-homepage = "https://github.com/zzoe/util/"
-documentation = "https://github.com/zzoe/util/"
-repository = "https://github.com/zzoe/util/"
-readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
