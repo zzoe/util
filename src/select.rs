@@ -4,7 +4,7 @@ use std::task::{Context, Poll};
 
 use futures_lite::stream::Stream;
 
-pub struct Select<Fut>(pub Vec<Fut>);
+pub struct Select<Fut: Unpin + Future>(pub Vec<Fut>);
 
 impl<Fut: Unpin + Future> Stream for Select<Fut> {
     type Item = Fut::Output;

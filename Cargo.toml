@@ -1,19 +1,19 @@
 [package]
 name = "util"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["zoe <zoe211@163.com>"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-futures-lite = { version = "1", optional = true }
-async-io = { version = "1", optional = true }
-anyhow = { version = "1", optional = true }
-pin-project-lite = { version = "0", optional = true }
-quick-xml = { version = "0", optional = true }
-bytes = { version = "1", optional = true }
-serde_json = { version = "1", optional = true }
+futures-lite = { version = "*", optional = true }
+async-io = { version = "*", optional = true }
+anyhow = { version = "*", optional = true }
+pin-project-lite = { version = "*", optional = true }
+quick-xml = { version = "*", optional = true }
+bytes = { version = "*", optional = true }
+serde_json = { version = "*", optional = true }
 
 [features]
 default = []
@@ -24,8 +24,8 @@ timeout = ["async-io", "anyhow", "futures-lite", "pin-project-lite"]
 esb = ["quick-xml", "bytes", "serde_json"]
 
 [dev-dependencies]
-futures-lite = { version = "1" }
-async-io = { version = "1" }
-anyhow = { version = "1" }
-pin-project-lite = { version = "0" }
+futures-lite = { version = "*" }
+async-io = { version = "*" }
+anyhow = { version = "*" }
+pin-project-lite = { version = "*" }
 util = { path = ".", features = ["all"] }
