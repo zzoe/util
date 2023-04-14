@@ -1,3 +1,5 @@
+#[cfg(feature = "json_display")]
+pub use json_display::JsonDisplay;
 #[cfg(feature = "select")]
 pub use select::Select;
 #[cfg(feature = "timeout")]

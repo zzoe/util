@@ -6,26 +6,31 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[workspace]
+members = ["json_display"]
+
 [dependencies]
-futures-lite = { version = "*", optional = true }
-async-io = { version = "*", optional = true }
 anyhow = { version = "*", optional = true }
+async-io = { version = "*", optional = true }
+bytes = { version = "*", optional = true }
+futures-lite = { version = "*", optional = true }
 pin-project-lite = { version = "*", optional = true }
 quick-xml = { version = "*", optional = true }
-bytes = { version = "*", optional = true }
 serde_json = { version = "*", optional = true }
+json_display = { path = "json_display", optional = true }
 
 [features]
 default = []
-all = ["select", "timeout", "esb"]
+all = ["select", "timeout", "esb", "json_display"]
 
+esb = ["quick-xml", "bytes", "serde_json"]
 select = ["futures-lite"]
 timeout = ["async-io", "anyhow", "futures-lite", "pin-project-lite"]
-esb = ["quick-xml", "bytes", "serde_json"]
 
 [dev-dependencies]
-futures-lite = { version = "*" }
-async-io = { version = "*" }
 anyhow = { version = "*" }
+async-io = { version = "*" }
+futures-lite = { version = "*" }
 pin-project-lite = { version = "*" }
+serde = { version = "*", features = ["derive"] }
 util = { path = ".", features = ["all"] }
